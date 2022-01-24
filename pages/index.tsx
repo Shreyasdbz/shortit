@@ -6,7 +6,7 @@ import { RefreshIcon } from "@heroicons/react/solid";
 
 import { LinkSuccessTypes } from "../interfaces/homeView";
 
-import { generateShort } from "../lib/link";
+import { generateShort, shortExists } from "../lib/link";
 
 import PageContainer from "../components/util/PageContainer";
 import InfoTab from "../components/util/InfoTab";
@@ -32,6 +32,9 @@ export default function Home() {
 
   function handleLinkSuccess(payload: LinkSuccessTypes) {
     let errorMessage = "";
+    if (shortExists()) {
+      errorMessage = "This short already exists :(";
+    }
     if (errorMessage === "") {
       if (payload.action === "OPEN") {
         setLinkSuccessModalActive(true);
@@ -61,7 +64,7 @@ export default function Home() {
       {/* Link Success Modal */}
       <Modal activeOn={linkSuccessModalActive}>
         <LinkSuccessModal
-          link={customShort}
+          link={"customShort"}
           onClose={() => {
             handleLinkSuccess({ action: "CLOSE" });
           }}
