@@ -1,14 +1,18 @@
 /** @format */
 
+import { useContext } from "react";
+
+import { ShortsContext } from "../context/shortsContext";
+
 import CaptionText from "../util/CaptionText";
 import SecondaryButton from "../util/SecondaryButton";
 
 type LinkSuccessModalProps = {
-  link: string;
   onClose: () => void;
 };
 
-const LinkSuccessModal = ({ link, onClose }: LinkSuccessModalProps) => {
+const LinkSuccessModal = ({ onClose }: LinkSuccessModalProps) => {
+  const short = useContext(ShortsContext).short;
   return (
     <div
       className="w-full flex flex-col gap-2 items-center justify-center py-5"
@@ -22,10 +26,10 @@ const LinkSuccessModal = ({ link, onClose }: LinkSuccessModalProps) => {
         <button
           className="w-full border-none outline-none px-2 py-2 bg-indigo-500 rounded-xl shadow-lg shadow-indigo-500/25 hover:opacity-90"
           onClick={() => {
-            navigator.clipboard.writeText(link);
+            navigator.clipboard.writeText(short);
           }}
         >
-          <span className="break-words text-slate-100 text-xl">{link}</span>
+          <span className="break-words text-slate-100 text-xl">{short}</span>
         </button>
         <CaptionText>Click to copy</CaptionText>
       </div>

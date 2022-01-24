@@ -1,3 +1,9 @@
+/** @format */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  transition: 0.3s;
+}

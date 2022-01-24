@@ -14,7 +14,7 @@ const SecondaryButton = ({ onClick, children }: SecondaryButtonProps) => {
   return (
     <div className="w-full h-full flex items-center justify-center py-4 ">
       <button
-        className="flex flex-row items-center h-full justify-center px-2  rounded-xl text-slate-100 bg-cyan-500 shadow-lg shadow-cyan-500/25 hover:opacity-90"
+        className="flex flex-row items-center h-full justify-center px-2  rounded-xl text-slate-100 bg-cyan-500 shadow-lg shadow-slate-600/25 md:hover:-translate-y-0.5"
         onClick={onClick}
       >
         {children}

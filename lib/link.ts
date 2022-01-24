@@ -1,10 +1,6 @@
 /** @format */
 
-import { collection, doc, getDoc, setDoc } from "@firebase/firestore";
-
-import { firebase_firestore } from "../config/firebase";
-
-function _generate_short(shortLength: number): string {
+export function generateShortString(shortLength: number): string {
   let charOptions = [
     "a",
     "b",
@@ -51,28 +47,3 @@ function _generate_short(shortLength: number): string {
   }
   return short;
 }
-
-export const generateShort = async () => {
-  // Generate -------
-  let shortLength = 6;
-  let short = _generate_short(shortLength);
-  // Check if exists
-  let exists = true;
-  while (exists) {
-    const docRef = doc(firebase_firestore, "shorts", short);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      short = _generate_short(shortLength);
-    } else {
-      exists = false;
-    }
-  }
-
-  return short;
-};
-
-export const shortExists = (): boolean => {
-  let exists = false;
-
-  return exists;
-};
