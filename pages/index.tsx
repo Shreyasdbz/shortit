@@ -3,7 +3,9 @@
 import { useState, useContext } from "react";
 import Head from "next/head";
 import { RefreshIcon } from "@heroicons/react/solid";
+import { useAuthState } from "react-firebase-hooks/auth";
 
+import { firebase_auth } from "../config/firebase";
 import { LinkSuccessTypes } from "../interfaces/homeView";
 import { ShortsContext } from "../components/context/shortsContext";
 
@@ -30,6 +32,7 @@ export default function Home() {
   const applyShortAsync = useContext(ShortsContext).applyShortAsyncTest;
   const applyShort = useContext(ShortsContext).applyShort;
   // Data
+  const [userSignedIn] = useAuthState(firebase_auth);
   // Modals
   const [linkSuccessModalActive, setLinkSuccessModalActive] =
     useState<boolean>(false);
@@ -104,8 +107,7 @@ export default function Home() {
           >
             <span className="text-xl px-8 py-1 uppercase font-bold">Apply</span>
           </SecondaryButton>
-          {/* <SignOnBanner /> */}
-          <ManageButton />
+          {userSignedIn ? <ManageButton /> : <SignOnBanner />}
         </main>
         <InfoTab />
       </PageContainer>
