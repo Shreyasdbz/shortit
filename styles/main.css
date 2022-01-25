@@ -4,8 +4,6 @@
 @tailwind utilities;
 /*# sourceMappingURL=main.css.map */
 
-@layer components {
-  body {
-    /* @apply bg-indigo-500; */
-  }
+body {
+  background-color: #6366f1;
 }
