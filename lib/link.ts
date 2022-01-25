@@ -1,6 +1,6 @@
 /** @format */
 
-export function generateShortString(shortLength: number): string {
+export function generateShortString(shortLength?: number): string {
   let charOptions = [
     "a",
     "b",
@@ -39,6 +39,7 @@ export function generateShortString(shortLength: number): string {
     "8",
     "9",
   ];
+  if (!shortLength) shortLength = 4;
   let short = "";
   for (let i = 0; i < shortLength; i++) {
     let randomChar =
@@ -46,4 +47,11 @@ export function generateShortString(shortLength: number): string {
     short += randomChar;
   }
   return short;
+}
+
+export function isValidUrl(urlInput: string): boolean {
+  var res = urlInput.match(
+    /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+  );
+  return res !== null;
 }

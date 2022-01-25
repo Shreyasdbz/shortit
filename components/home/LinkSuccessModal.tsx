@@ -1,6 +1,6 @@
 /** @format */
 
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 import { ShortsContext } from "../context/shortsContext";
 
@@ -12,7 +12,12 @@ type LinkSuccessModalProps = {
 };
 
 const LinkSuccessModal = ({ onClose }: LinkSuccessModalProps) => {
-  const short = useContext(ShortsContext).short;
+  const short = `https://shortit.app/${useContext(ShortsContext).short}`;
+
+  useEffect(() => {
+    navigator.clipboard.writeText(short);
+  });
+
   return (
     <div
       className="w-full flex flex-col gap-2 items-center justify-center py-5"
@@ -31,7 +36,7 @@ const LinkSuccessModal = ({ onClose }: LinkSuccessModalProps) => {
         >
           <span className="break-words text-slate-100 text-xl">{short}</span>
         </button>
-        <CaptionText>Click to copy</CaptionText>
+        <CaptionText>Copied to clipboard :)</CaptionText>
       </div>
       <SecondaryButton onClick={onClose}>
         <span className="text-xl px-8 py-1 uppercase font-bold">Close</span>

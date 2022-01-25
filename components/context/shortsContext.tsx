@@ -1,9 +1,14 @@
 /** @format */
 
 import React, { useState, createContext } from "react";
-import { doc, getDoc, setDoc, collection } from "@firebase/firestore";
-import { ApplyShortReturnType } from "../../interfaces/shorts";
+import { doc, getDoc, setDoc, serverTimestamp } from "@firebase/firestore";
+
+import {
+  ApplyShortReturnType,
+  GetRedirectResultType,
+} from "../../interfaces/shorts";
 import { firebase_firestore } from "../../config/firebase";
+import { isValidUrl, generateShortString } from "../../lib/link";
 
 type ShortsContextType = {
   short: string;
@@ -11,9 +16,8 @@ type ShortsContextType = {
   primaryUrl: string;
   setPrimaryUrl: React.Dispatch<React.SetStateAction<string>>;
   reGenerateShort: () => void;
-  applyShort_legacy: () => ApplyShortReturnType;
-  applyShortAsyncTest: () => Promise<ApplyShortReturnType>;
-  applyShort: () => void;
+  applyShort: () => Promise<ApplyShortReturnType>;
+  getRedirect: (url: string) => Promise<GetRedirectResultType>;
 };
 export const ShortsContext = createContext({} as ShortsContextType);
 
@@ -23,111 +27,109 @@ type ShortsContextProviderProps = {
 export const ShortsContextProvider = ({
   children,
 }: ShortsContextProviderProps) => {
-  const [short, setShort] = useState<string>(_generate_short_string());
+  const [short, setShort] = useState<string>(generateShortString());
   const [primaryUrl, setPrimaryUrl] = useState<string>("");
 
-  function _generate_short_string(shortLength?: number): string {
-    let charOptions = [
-      "a",
-      "b",
-      "c",
-      "d",
-      "e",
-      "f",
-      "g",
-      "h",
-      "i",
-      "j",
-      "k",
-      "l",
-      "m",
-      "n",
-      "o",
-      "p",
-      "q",
-      "r",
-      "s",
-      "t",
-      "u",
-      "v",
-      "w",
-      "x",
-      "y",
-      "z",
-      "0",
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-    ];
-    if (!shortLength) {
-      shortLength = 6;
-    }
-    let newShort = "";
-    for (let i = 0; i < shortLength; i++) {
-      let randomChar =
-        charOptions[Math.floor(Math.random() * charOptions.length)];
-      newShort += randomChar;
-    }
-    return newShort;
+  async function _set_short_in_db() {
+    await setDoc(doc(firebase_firestore, "shorts", short), {
+      fullUrl: primaryUrl,
+      createdAt: serverTimestamp(),
+    });
   }
 
   function reGenerateShort() {
-    setShort(_generate_short_string());
+    let newShort = generateShortString();
+    setShort(newShort);
   }
 
-  function applyShort_legacy(): ApplyShortReturnType {
-    let res: ApplyShortReturnType = {
-      result: "SUCCESS",
-    };
-    //   Check if short already exists
-    //   Set Short
-    return res;
-  }
-
-  async function applyShortAsyncTest() {
+  async function applyShort(): Promise<ApplyShortReturnType> {
     return new Promise<ApplyShortReturnType>((resolve, reject) => {
-      resolve({
+      // ERROR CHECK::::::::
+      // Check if the url is valid
+      if (!isValidUrl(primaryUrl)) {
+        reject({
+          result: "FAILURE",
+          errorMessage: "Your URL is not valid :(",
+        });
+      }
+      // ERROR CHECK::::::::
+      // Check if short already exists
+      _short_already_exists()
+        .then((res) => {
+          if (res === true) {
+            reject({
+              result: "FAILURE",
+              errorMessage: "Short already exists :(",
+            });
+          } else {
+            //   Now set the document
+            _set_short_in_db()
+              .then(() => {
+                resolve({
+                  result: "SUCCESS",
+                });
+              })
+              .catch((setError) => {
+                console.log("_set_short_in_db error: ", setError);
+                reject({
+                  result: "FAILURE",
+                  errorMessage: "Looks like a database connection error :(",
+                });
+              });
+          }
+        })
+        .catch((checkError) => {
+          console.log("_short_already_exists check error: ", checkError);
+          reject({
+            result: "FAILURE",
+            errorMessage: "Looks like a database connection error :(",
+          });
+        });
+    });
+  }
+
+  async function getRedirect(url: string): Promise<GetRedirectResultType> {
+    return new Promise<GetRedirectResultType>((resolve, reject) => {
+      _retrieve_short(url).then((res) => {
+        if (res.result === "SUCCESS") {
+          resolve(res);
+        } else {
+          reject(res);
+        }
+      });
+    });
+  }
+
+  async function _short_already_exists(newShort?: string): Promise<boolean> {
+    let testShort = short;
+    if (newShort) testShort = newShort;
+    let docRef = await getDoc(doc(firebase_firestore, "shorts", testShort));
+    if (docRef.exists()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async function _retrieve_short(
+    short_to_retrieve_name: string
+  ): Promise<GetRedirectResultType> {
+    let docRef = await getDoc(
+      doc(firebase_firestore, "shorts", short_to_retrieve_name)
+    );
+    if (docRef.exists()) {
+      let targetUrl = docRef.data().fullUrl;
+      return {
         result: "SUCCESS",
-      });
-      reject({
+        link: targetUrl,
+      };
+    } else {
+      return {
         result: "FAILURE",
-        error: "Unknown",
-      });
-    });
+        errorMessage: "Couldn't find the link",
+      };
+    }
   }
-
-  function applyShort() {
-    //
-    _short_already_exists().then((res) => {
-      console.log(res);
-    });
-  }
-
-  async function _short_already_exists() {
-    // const docRef = doc(firebase_firestore, "shorts", short);
-    // const docSnap = await getDoc(docRef);
-    // if (docSnap.exists()) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
-
-    const shortsRef = collection(firebase_firestore, "shorts");
-
-    await getDoc(doc(shortsRef, short)).then((d) => {
-      console.log(d);
-    });
-  }
-
-  const _set_short = async () => {
-    //
-  };
 
   return (
     <ShortsContext.Provider
@@ -137,9 +139,8 @@ export const ShortsContextProvider = ({
         primaryUrl,
         setPrimaryUrl,
         reGenerateShort,
-        applyShort_legacy,
-        applyShortAsyncTest,
         applyShort,
+        getRedirect,
       }}
     >
       {children}

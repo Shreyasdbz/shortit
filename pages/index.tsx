@@ -11,7 +11,7 @@ import { ShortsContext } from "../components/context/shortsContext";
 
 import PageContainer from "../components/util/PageContainer";
 import InfoTab from "../components/util/InfoTab";
-import HeaderLarge from "../components/home/HeaderLarge";
+import HeaderLarge from "../components/util/HeaderLarge";
 import CaptionText from "../components/util/CaptionText";
 import InputBox from "../components/util/InputBox";
 import SubHeading from "../components/util/SubHeading";
@@ -19,8 +19,8 @@ import InputContainer from "../components/util/InputContainer";
 import SecondaryButton from "../components/util/SecondaryButton";
 import Modal from "../components/util/Modal";
 import LinkSuccessModal from "../components/home/LinkSuccessModal";
-import SignOnBanner from "../components/home/SignOnBanner";
-import ManageButton from "../components/home/ManageButton";
+// import SignOnBanner from "../components/home/SignOnBanner";
+// import ManageButton from "../components/home/ManageButton";
 
 export default function Home() {
   // Context
@@ -29,7 +29,6 @@ export default function Home() {
   const setShort = useContext(ShortsContext).setShort;
   const primaryUrl = useContext(ShortsContext).primaryUrl;
   const setPrimaryUrl = useContext(ShortsContext).setPrimaryUrl;
-  const applyShortAsync = useContext(ShortsContext).applyShortAsyncTest;
   const applyShort = useContext(ShortsContext).applyShort;
   // Data
   const [userSignedIn] = useAuthState(firebase_auth);
@@ -47,7 +46,15 @@ export default function Home() {
       //   alert(err);
       // }
       // applyShortAsync().then((data) => [console.log(data)]);
-      // applyShort();
+      applyShort()
+        .then((data) => {
+          console.log("In component: [data]", data);
+          setLinkSuccessModalActive(true);
+        })
+        .catch((err) => {
+          console.log("In component: [error]", err);
+          alert(err.errorMessage);
+        });
     } else if (payload.action === "CLOSE") {
       setLinkSuccessModalActive(false);
     }
@@ -107,7 +114,7 @@ export default function Home() {
           >
             <span className="text-xl px-8 py-1 uppercase font-bold">Apply</span>
           </SecondaryButton>
-          {userSignedIn ? <ManageButton /> : <SignOnBanner />}
+          {/* {userSignedIn ? <ManageButton /> : <SignOnBanner />} */}
         </main>
         <InfoTab />
       </PageContainer>
