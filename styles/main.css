@@ -3,3 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 /*# sourceMappingURL=main.css.map */
+
+@layer components {
+  body {
+    @apply bg-indigo-500;
+  }
+}
