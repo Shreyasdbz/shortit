@@ -12,7 +12,7 @@ class MyDocument extends Document {
           <link rel="apple-touch-icon" href="apple-touch-icon.png" />
           <meta
             name="apple-mobile-web-app-status-bar-style"
-            content="black-translucent"
+            content="default"
           />
           <meta name="theme-color" content="#6366f1" />
         </Head>
