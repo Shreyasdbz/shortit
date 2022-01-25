@@ -6,6 +6,6 @@
 
 @layer components {
   body {
-    @apply bg-indigo-500;
+    /* @apply bg-indigo-500; */
   }
 }
