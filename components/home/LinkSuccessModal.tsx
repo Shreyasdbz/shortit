@@ -12,7 +12,7 @@ type LinkSuccessModalProps = {
 };
 
 const LinkSuccessModal = ({ onClose }: LinkSuccessModalProps) => {
-  const short = `https://shortit.app/${useContext(ShortsContext).short}`;
+  const short = `shortit.app/${useContext(ShortsContext).short}`;
 
   useEffect(() => {
     navigator.clipboard.writeText(short);
@@ -38,9 +38,11 @@ const LinkSuccessModal = ({ onClose }: LinkSuccessModalProps) => {
         </button>
         <CaptionText>Copied to clipboard :)</CaptionText>
       </div>
-      <SecondaryButton onClick={onClose}>
-        <span className="text-xl px-8 py-1 uppercase font-bold">Close</span>
-      </SecondaryButton>
+      <div className="w-full flex items-center justify-center px-10">
+        <SecondaryButton onClick={onClose}>
+          <span className="text-xl py-2 uppercase font-bold">Close</span>
+        </SecondaryButton>
+      </div>
     </div>
   );
 };

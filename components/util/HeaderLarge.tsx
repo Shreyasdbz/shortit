@@ -2,7 +2,7 @@
 
 const HeaderLarge = () => {
   return (
-    <div className="w-full flex flex-col items-start justify-center md:flex-row gap-1 md:gap-4">
+    <div className="w-full flex flex-col items-start justify-center md:flex-row gap-1 md:gap-4 mt-2">
       <h1 className="text-8xl font-extrabold">Short </h1>
       <h1 className="leading-loose">
         <span className="text-8xl font-extrabold">It</span>

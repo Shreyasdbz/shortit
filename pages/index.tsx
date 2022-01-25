@@ -6,7 +6,11 @@ import { RefreshIcon } from "@heroicons/react/solid";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 import { firebase_auth } from "../config/firebase";
-import { LinkSuccessTypes } from "../interfaces/homeView";
+import {
+  ApplyTypes,
+  SavedShortsModalTypes,
+  InfoModalTypes,
+} from "../interfaces/homeView";
 import { ShortsContext } from "../components/context/shortsContext";
 
 import PageContainer from "../components/util/PageContainer";
@@ -19,8 +23,10 @@ import InputContainer from "../components/util/InputContainer";
 import SecondaryButton from "../components/util/SecondaryButton";
 import Modal from "../components/util/Modal";
 import LinkSuccessModal from "../components/home/LinkSuccessModal";
-// import SignOnBanner from "../components/home/SignOnBanner";
-// import ManageButton from "../components/home/ManageButton";
+import SignedInView from "../components/home/SignedInView";
+import SignOnBanner from "../components/home/SignOnBanner";
+import SavedShortsModal from "../components/home/SavedShortsModal";
+import InfoModal from "../components/util/InfoModal";
 
 export default function Home() {
   // Context
@@ -30,22 +36,18 @@ export default function Home() {
   const primaryUrl = useContext(ShortsContext).primaryUrl;
   const setPrimaryUrl = useContext(ShortsContext).setPrimaryUrl;
   const applyShort = useContext(ShortsContext).applyShort;
+  const getSavedShorts = useContext(ShortsContext).getSavedShorts;
+
   // Data
   const [userSignedIn] = useAuthState(firebase_auth);
   // Modals
   const [linkSuccessModalActive, setLinkSuccessModalActive] =
     useState<boolean>(false);
+  const [savedShortsModalActive, setSavedShortsModalActive] = useState(false);
+  const [infoModalActive, setInfoModalActive] = useState(false);
 
-  function handleApply(payload: LinkSuccessTypes) {
+  function handleApply(payload: ApplyTypes) {
     if (payload.action === "OPEN") {
-      // let verification = applyShort();
-      // if (verification.result === "SUCCESS") {
-      //   setLinkSuccessModalActive(true);
-      // } else if (verification.result === "FAILURE") {
-      //   let err = verification.errorMessage;
-      //   alert(err);
-      // }
-      // applyShortAsync().then((data) => [console.log(data)]);
       applyShort()
         .then((data) => {
           console.log("In component: [data]", data);
@@ -60,14 +62,32 @@ export default function Home() {
     }
   }
 
+  function handleSavedShorts(payload: SavedShortsModalTypes) {
+    if (payload.action === "OPEN") {
+      getSavedShorts();
+      setSavedShortsModalActive(true);
+    } else if (payload.action === "CLOSE") {
+      setSavedShortsModalActive(false);
+    }
+  }
+
+  function handleInfoModal(payload: InfoModalTypes) {
+    if (payload.action === "OPEN") {
+      setInfoModalActive(true);
+    } else if (payload.action === "CLOSE") {
+      setInfoModalActive(false);
+    }
+  }
+
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center ">
       <Head>
         <title>Short It</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* Blur */}
-      {linkSuccessModalActive && (
+      {(linkSuccessModalActive ||
+        savedShortsModalActive ||
+        infoModalActive) && (
         <div
           className="w-screen h-screen fixed top-0 left-0"
           style={{
@@ -80,6 +100,22 @@ export default function Home() {
         <LinkSuccessModal
           onClose={() => {
             handleApply({ action: "CLOSE" });
+          }}
+        />
+      </Modal>
+      {/* Shorts History / Saved Shorts Modal */}
+      <Modal activeOn={savedShortsModalActive}>
+        <SavedShortsModal
+          onClose={() => {
+            handleSavedShorts({ action: "CLOSE" });
+          }}
+        />
+      </Modal>
+      {/* Info Modal Modal */}
+      <Modal activeOn={infoModalActive}>
+        <InfoModal
+          onClose={() => {
+            handleInfoModal({ action: "CLOSE" });
           }}
         />
       </Modal>
@@ -106,17 +142,28 @@ export default function Home() {
               </button>
             </div>
           </InputContainer>
-          {/* <span className="text-red-500">Name is already taken :(</span> */}
-          <SecondaryButton
-            onClick={() => {
-              handleApply({ action: "OPEN" });
-            }}
-          >
-            <span className="text-xl px-8 py-1 uppercase font-bold">Apply</span>
-          </SecondaryButton>
-          {/* {userSignedIn ? <ManageButton /> : <SignOnBanner />} */}
+          <div className="w-full max-w-3xl flex items-center justify-center">
+            <SecondaryButton
+              onClick={() => {
+                handleApply({ action: "OPEN" });
+              }}
+            >
+              <span className="text-xl py-2 uppercase font-bold">Apply</span>
+            </SecondaryButton>
+          </div>
+          {userSignedIn ? (
+            <SignedInView
+              onOpen={() => handleSavedShorts({ action: "OPEN" })}
+            />
+          ) : (
+            <SignOnBanner />
+          )}
         </main>
-        <InfoTab />
+        <InfoTab
+          onOpen={() => {
+            handleInfoModal({ action: "OPEN" });
+          }}
+        />
       </PageContainer>
     </div>
   );

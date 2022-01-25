@@ -4,6 +4,8 @@ type BasicModalTypes = {
   action: "OPEN" | "CLOSE";
 };
 
-export type LinkSuccessTypes = BasicModalTypes;
+export type ApplyTypes = BasicModalTypes;
 
-export const test = {};
+export type SavedShortsModalTypes = BasicModalTypes;
+
+export type InfoModalTypes = BasicModalTypes;

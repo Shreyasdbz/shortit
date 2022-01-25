@@ -1,9 +1,9 @@
 /** @format */
-
+import { useContext } from "react";
 import { BsGoogle } from "react-icons/bs";
 import { BsGithub } from "react-icons/bs";
-import { BsApple } from "react-icons/bs";
-import { BsMicrosoft } from "react-icons/bs";
+// import { BsApple } from "react-icons/bs";
+// import { BsMicrosoft } from "react-icons/bs";
 import { signInWithPopup } from "@firebase/auth";
 
 import {
@@ -11,33 +11,46 @@ import {
   firebase_google_provider,
   firebase_gitHub_provider,
 } from "../../config/firebase";
+import { ShortsContext } from "../context/shortsContext";
 
 import SignOnButton from "../util/SignOnButton";
 
 const SignOnBanner = () => {
+  const initiateUser = useContext(ShortsContext).initiateUserDoc;
+
   function signInWithGoogle() {
-    signInWithPopup(firebase_auth, firebase_google_provider).then(() => {
-      //
-    });
+    signInWithPopup(firebase_auth, firebase_google_provider)
+      .then(() => {
+        initiateUser();
+      })
+      .catch((err) => {
+        console.log("Google Provider sign in error: ", err);
+        alert("Sorry looks like we couldn't sign you in with Google");
+      });
   }
   function signInWithGitHub() {
-    signInWithPopup(firebase_auth, firebase_gitHub_provider).then(() => {
-      //
-    });
+    signInWithPopup(firebase_auth, firebase_gitHub_provider)
+      .then(() => {
+        initiateUser();
+      })
+      .catch((err) => {
+        console.log("GitHub Provider sign in error: ", err);
+        alert("Sorry looks like we couldn't sign you in with GitHub");
+      });
   }
-  function signInWithApple() {
-    signInWithPopup(firebase_auth, firebase_google_provider).then(() => {
-      //
-    });
-  }
-  function signInWithMicrosoft() {
-    signInWithPopup(firebase_auth, firebase_google_provider).then(() => {
-      //
-    });
-  }
+  // function signInWithApple() {
+  //   signInWithPopup(firebase_auth, firebase_google_provider).then(() => {
+  //     //
+  //   });
+  // }
+  // function signInWithMicrosoft() {
+  //   signInWithPopup(firebase_auth, firebase_google_provider).then(() => {
+  //     //
+  //   });
+  // }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-2">
+    <div className="w-full flex flex-col items-center justify-center gap-2 mb-10">
       <span className="text-slate-600 dark:text-slate-400">
         Sign in to save shorts
       </span>
@@ -49,12 +62,12 @@ const SignOnBanner = () => {
         <SignOnButton signInFunction={signInWithGitHub}>
           <BsGithub className="text-xl text-slate-600 dark:text-slate-200" />
         </SignOnButton>
-        <SignOnButton signInFunction={signInWithApple}>
+        {/* <SignOnButton signInFunction={signInWithApple}>
           <BsApple className="text-xl text-slate-600 dark:text-slate-200" />
-        </SignOnButton>
-        <SignOnButton signInFunction={signInWithMicrosoft}>
+        </SignOnButton> */}
+        {/* <SignOnButton signInFunction={signInWithMicrosoft}>
           <BsMicrosoft className="text-xl text-slate-600 dark:text-slate-200" />
-        </SignOnButton>
+        </SignOnButton> */}
       </div>
     </div>
   );

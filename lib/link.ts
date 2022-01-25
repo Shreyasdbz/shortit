@@ -55,3 +55,15 @@ export function isValidUrl(urlInput: string): boolean {
   );
   return res !== null;
 }
+
+export function isValidUrlFull(urlInput: string): boolean {
+  let url;
+
+  try {
+    url = new URL(urlInput);
+  } catch (_) {
+    return false;
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:";
+}

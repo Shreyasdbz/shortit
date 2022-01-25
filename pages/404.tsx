@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/router";
 import { useContext, useEffect } from "react";
+import Head from "next/head";
 
 import { ShortsContext } from "../components/context/shortsContext";
 
@@ -13,18 +14,32 @@ export default function Custom404() {
   const { asPath } = useRouter();
   const getRedirect = useContext(ShortsContext).getRedirect;
 
-  useEffect(() => {
-    getRedirect(asPath).then((res) => {
-      if (res.result === "SUCCESS") {
-        window.location.assign(res.link);
-      } else if (res.result === "FAILURE") {
-        //
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   getRedirect(asPath).then((res) => {
+  //     if (res.result === "SUCCESS") {
+  //       console.log("Link: ", res.link);
+  //       window.location.assign(res.link);
+  //     } else if (res.result === "FAILURE") {
+  //       //
+  //     }
+  //   });
+  // }, []);
+
+  getRedirect(asPath).then((res) => {
+    if (res.result === "SUCCESS") {
+      console.log("Link: ", res.link);
+      console.log("Href: ", window.location.href);
+      window.location.href = res.link;
+    } else if (res.result === "FAILURE") {
+      //
+    }
+  });
 
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center ">
+      <Head>
+        <title>Short It Redirect</title>
+      </Head>
       <PageContainer>
         <main className="w-full py-5 px-4 flex flex-col items-center justify-start dark:text-white">
           <HeaderLarge />
